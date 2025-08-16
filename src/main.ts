@@ -1,3 +1,7 @@
+import KeysManager from "./KeysManager";
+import Map from "./Map";
+
+// Init canvas and context
 const canvas = document.getElementById("canvas");
 if (!canvas || !(canvas instanceof HTMLCanvasElement)) throw new Error("Canvas doesn't exist.");
 
@@ -8,47 +12,39 @@ if (!c) throw new Error("Can't get 2D context from canvas.")
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-c.fillStyle = "black";
-c.fillRect(0, 0, canvas.width, canvas.height);
+// Disable smoothing for perfect pixels
+c.imageSmoothingEnabled = false;
 
-// Display game "town" map
-const image = new Image();
-image.src = './assets/maps/town.png';
 
-image.onload = () => {
-  c.imageSmoothingEnabled = false;
-}
+// Display "town" map
+const townMap = new Map({
+  name: "town",
+  pos: { x: -canvas.width / 2, y: -canvas.height / 2 },
+  ctx: c
+});
 
-let x = -canvas.width / 2;
-let y = -canvas.height / 2
+const KM = new KeysManager();
 
-function animate(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.drawImage(image, x, y, image.width * 4, image.height * 4);
+function animate(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement): void {
+  // Loop (~60 FPS)
   requestAnimationFrame(() => animate(ctx, canvas));
+
+  // Move map
+  if (KM.isLastPressed("z")) townMap.move({ x: 0, y: 2});
+  else if (KM.isLastPressed("q")) townMap.move({ x: 2, y: 0});
+  else if (KM.isLastPressed("s")) townMap.move({ x: 0, y: -2});
+  else if (KM.isLastPressed("d")) townMap.move({ x: -2, y: 0});
+
+  // Update map (redraw map's sprite)
+  townMap.update();
 }
 
 animate(c, canvas)
 
-window.addEventListener('keypress', (e) => {
-  switch (e.key) {
-    case "z":
-      y += 10;
-      break;
+window.addEventListener('keydown', (e) => {
+  KM.keydown(e.key);
+});
 
-    case "q":
-      x += 10;
-      break;
-
-    case "s":
-      y -= 10;
-      break;
-
-    case "d":
-      x -= 10;
-      break;
-
-    default:
-      break;
-  }
+window.addEventListener('keyup', (e) => {
+  KM.keyup(e.key);
 })
