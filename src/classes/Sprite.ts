@@ -1,4 +1,4 @@
-import type { Vec2 } from "./Types";
+import type { Vec2 } from "./utils/Types";
 
 
 type SpriteOptions = {

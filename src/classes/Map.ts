@@ -1,5 +1,5 @@
 import Sprite from "./Sprite";
-import type { Vec2 } from "./Types";
+import type { Vec2 } from "./utils/Types";
 
 const mapsDatas = import.meta.glob('./data/*.json', { eager: true }) as Record<string, MapData>;
 const mapsImages = import.meta.glob('./assets/maps/*.png', { eager: true });
@@ -18,7 +18,7 @@ type MapData = {
 
 export default class Map {
    #sprite: Sprite;
-   #collisions: number[][];
+   #collisions: boolean[][];
    #name: string;
 
    constructor({ name, pos, ctx }: MapOptions) {
@@ -42,7 +42,7 @@ export default class Map {
       this.#sprite.draw();
    }
 
-   #getCollisions2D(): number[][] {
+   #getCollisions2D(): boolean[][] {
       const mapData = mapsDatas[`./data/${this.#name}.json`];
 
       // Check if JSON map exists
@@ -59,7 +59,7 @@ export default class Map {
       for (let i = 0; i < mapData.height; i++) {
          const subArray = []
          for (let j = 0; j < mapData.width; j++) {
-            subArray.push(collisions.data[i * mapData.width + j])
+            subArray.push(collisions.data[i * mapData.width + j] !== 0)
          }
          collisions2D.push(subArray)
       }

@@ -1,5 +1,5 @@
-import KeysManager from "./KeysManager";
-import Map from "./Map";
+import KeysManager from "./classes/KeysManager";
+import Map from "./classes/Map";
 
 // Init canvas and context
 const canvas = document.getElementById("canvas");
